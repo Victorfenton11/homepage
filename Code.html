@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Projects - Homepage</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="icon" href="pictures/Website-Icon.png">
+    </head>
+    <body>
+        <div>
+            <img src="pictures/sea.png" alt="Teal Gradient" class="photo-strip">
+        </div>
+
+        <div class="blank"></div>
+
+        <div>
+            <nav class="navbar navbar-light bg-light" id="nav-left">
+                <a class="navbar-brand" href="Homepage.html">Home</a>
+                <a class="navbar-brand" href="AboutMe.html">About Me</a>
+                <a class="navbar-brand" href="Code.html" style="color: navy">Code & Projects</a>
+            </nav>
+            <nav class="navbar navbar-light bg-light" id="nav-right">
+                <a class="navbar-brand" href="Gallery.html">Gallery</a>
+                <a class="navbar-brand" href="CommonApp.html">College App</a>
+                <a class="navbar-brand" href="Contact.html">Contact</a>
+            </nav>
+            <a id="title" href="Homepage.html">Victor Fenton Aguilar</a>
+        </div>
+
+        <div class="blank"></div>
+        <div class="blank"></div>
+
+        <!-- structure for a devlog entry:
+        <h1 class="entry-title">Title</h1>
+        <h4 id="date">Date/</h4>
+        <div class="blank"></div>
+        <p>Text. Here's what I did: <span id="dots">...</span>
+        <div class="smallblank"></div>
+        <span id="more"> Rest of text and images</span></p>
+        <button onclick="ReadMore()" id="ReadMore">Read more >></button> -->
+
+        <div id="blogspace">
+
+            <h1 class="entry-title">{C} Speller Implementation | CS50 Problem Set 5</c></h1>
+            <h4 id="date">July 21st, 2020/</h4>
+            <div class="blank"></div>
+            <p>In CS50's Week 5 Problem Set, your task is to implement a spell-checker using a dictionary of words and a hash table.
+            "The challenge ahead is to implement the fastest spell checker you can! By 'fastest,' though, we’re talking actual
+            'wall-clock,' not asymptotic, time". Initially, they provide you with a program that’s designed to spell-check a file
+            after loading a dictionary of words from disk into memory. Unfortunately, they didn’t quite get around to implementing
+            the loading part. Or the checking part. Both (and a bit more) they leave to you!  Here's what I did: <span id="dots2">...</span>
+            <div class="smallblank"></div>
+            <span class="more" id="more2">In the program that they provide you with, there are three main files, plus some dictionaries
+            to work with and some sample texts and keys to test your code. First is speller.c, a program that implements a spell-checker,
+            outputting a list of all the words misspelled in a file, plus some statistics on the number of words and the time to run each
+            part of your program. The spell-checker works by taking each word in an inputted file, running it through your program, and
+            checking if that word with its specific spelling is found in a hashed dictionary. That dictionary, meanwhile, is implemented in
+            a file called dictionary.c. (As programs get more complex, it’s often convenient to break them into multiple files.) The prototypes
+            for the functions therein, meanwhile, are defined not in dictionary.c itself but in dictionary.h instead. That way, both speller.c
+            and dictionary.c can #include the file. Here's a more detailed explanation of the problem by CS50's own Brian Yu:
+            <div class="smallblank"></div>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/_z57x5PGF4w" class="devimg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div class="smallblank"></div>
+            In short, you need to implement 5 functions: a load function, to load the contents of the dictionary into memory;
+            a hash function (perhaps the most important part of the problem), to perform some sort of operation on a word to
+            determine its hash code, that in this case is going to be the index of our hash table in which we are going to
+            insert that specific word; a size function, to count the number of words in the dictionary; a check function, to
+            determine if a word is misspelled or not using, again, the hash function; and an unload function, to free all the
+            memory previously allocated for our data structure. We'll review my implementation for each of these functions:
+            <div class="smallblank"></div>
+            <ul>
+                <li><strong>Preparations.-</strong></li>
+            </ul>
+            Before we start implementing the functions, we need to #include all the libraries that we are going to need throughout
+            the problem. Also, we need to initialize our hash table, define the structure of every node in our table, each of which
+            consists of one chunk of memory to store a word, plus another chunk to store a pointer to the next item in our index, in
+            case we get any collisions. Finally, we initialize the variables for the count of words in our dictionary and the number
+            of buckets in our hash table. We'll get back to explaining these later.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog2[1].png" alt="Photo of Code Section 1" class="devimg"></img>
+            <div class="smallblank"></div>
+            <ul>
+                <li><strong> Load() .-</strong></li>
+            </ul>
+            To load each word in the dictionary into the computer's memory and organize the words in our hash table, I first declared an
+            array to temporarily store each word from the dictionary. The array's length is set to the maximum length that an English
+            word can have (previously defined as 45) + 1 for the null terminating character of a string. Then, we open the file of the
+            dictionary (with "r" for read mode), checking if no errors were presented, and start the process of copying every word from
+            the dictionary to our word array, and into our hash table. <br>
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog2[2].png" alt="Photo of Code Section 2" class="devimg"></img>
+            <div class="smallblank"></div>
+            To do this, I used a while loop that uses fscanf to copy from the dictionary (*d), each word (%s for string), into our word_array
+            as long as we have not reached the end of the file. Once inside the loop, we call a secondary function to create a new node with
+            that word in our hash table, initializing its *next pointer to NULL. Then, we run our node's word through the hash function
+            (later explained) to get the specific index of our hash table in which we'll insert the node. Now that the node is created and we
+            know where we should put it, we set the *next pointer of our node to point to the head of the list at the desired index, and then
+            change the head of the list to be the current node. This will take care of keeping everything connected, creating a linked list in
+            the indexes where multiple nodes collide. Finally, we increment the word count after we've added each word. When we're finished, we
+            close the dictionary file and return true if no errors where found.
+            <div class="smallblank"></div>
+            <ul>
+                <li><strong> Size() .-</strong></li>
+            </ul>
+            No rocket science in this one. Since we had already counted the words that we added to the table in load(), we simply return the
+            word_count variable.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog2[3].png" alt="Photo of Code Section 3" class="devimg"></img>
+            <div class="smallblank"></div>
+            <ul>
+                <li><strong> Hash() .-</strong></li>
+            </ul>
+            This is where it gets interesting. My implementation of this function is what mainly differs my program from any other person's
+            implementation of speller. This is what determines the running time of my spell-checker. The purpose of a hash function is to take
+            a word and return which index into our hash table we should use in order to find insert that word into our data structure.
+            This function must be deterministic, meaning that it will always return the same hash code when provided the same input multiple times.
+            Also, we should try to make it as efficient as we can, balancing between running time and memory, but prioritizing time. Since a hash
+            table is an array where elements in the same indexes group in a linked list, we should try to make the hash codes as unique as we can,
+            so that we can search for word using the random access provided by arrays instead of searching for them inside of linked lists. In other
+            words, we should try our best to avoid collisions between words' indexes. <br>
+            <br>
+            What I first though about was to take the ascii sum for all the letters in the word and substract 97 from that number, so that the
+            smallest-value word ("a") would get the index 0. Since the largest allowed length for a word is 45 characters and the largest ascii
+            value for a letter (z) is 122, that would give 5490 buckets for our hash table, but a word with 45 z's in a row seemed a bit excessive,
+            so I decided that 4900 buckets was enough. While this seemed to perform decently, the running time wasn't as fast as I would want it to
+            be and we were still getting many collisions, so I took that same value and multiplied it by the index of the first letter of the word
+            (by index I mean 0 for a, 1 for b, etc...). Although this did make the program a little faster, some new collisions were also created.
+            To avoid these new collisions and get even better results, I twitched the operation a little bit and, in addition to multiplying by the index
+            of the first letter, I multiplied that index by 4900, avoiding any new collisions and spreading out the new values. Yes, this resulted in a
+            lot more buckets (127,400 to be exact) and a lot of empty ones, but the performance was much greater, even as fast as the CS50's staff
+            implementation almost, so I decided the memory wasted was worth the price.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog2[4].png" alt="Photo of Code Section 4" class="devimg"></img>
+            <div class="smallblank"></div>
+            These are some examples of my program's running time compared to the staff's solution:
+            <div class="smallblank"></div>
+            <table style="text-align: center">
+            <tr>
+                <th>Sample Text</th>
+                <th>My Implementation</th>
+                <th>Staff's Solution</th>
+            </tr>
+            <tr>
+                <td>Bible</td>
+                <td>0.55s</td>
+                <td>0.52s</td>
+            </tr>
+            <tr>
+                <td>Cat</td>
+                <td>0.03s</td>
+                <td>0.04s</td>
+            </tr>
+            <tr>
+                <td>La la land</td>
+                <td>0.05s</td>
+                <td>0.06s</td>
+            </tr>
+            <tr>
+                <td>Constitution</td>
+                <td>0.04s</td>
+                <td>0.04s</td>
+            </tr>
+            <tr>
+                <td>Shakespeare</td>
+                <td>0.66s</td>
+                <td>0.63s</td>
+            </tr>
+            </table>
+            <div class="smallblank"></div>
+            <ul>
+                <li><strong> Check() .-</strong></li>
+            </ul>
+            For the check() function, I simply ran the inputted word through our hash function and created a pointer called cursor that would
+            iterate through every element of the hash table at the index returned by the hash function, pointing to every node's word and
+            comparing it to the inputted word. If a matching word is found, we would return true. If we got to the end of the linked list (NULL)
+            and found no matches, then the program would return false.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog2[5].png" alt="Photo of Code Section 5" class="devimg"></img>
+            <div class="smallblank"></div>
+            <ul>
+                <li><strong> Unload() .-</strong></li>
+            </ul>
+            Lastly, to free all the memory allocated for our data structure, I created two pointers and used them in every bucket of our hash table,
+            setting the pointers equal to the last and second-to-last elements of the linked list, freeing each node and running them back until
+            every element of the index was cleared. If all the process is completed without encountering errors, the program returns true.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog2[6].png" alt="Photo of Code Section 6" class="devimg"></img>
+            <div class="smallblank"></div>
+            <ul>
+                <li><strong> Conclusion.-</strong></li>
+            </ul>
+            I found this problem to be somewhat challenging but amusing without a doubt. It was really fun to code and to watch it run and compete
+            against others' implementations. I submitted my solution to CS50's Speller Big Board and got in 1209th place, a big number, but still
+            a good result considering that my code's running time was almost as fast as the staff's implementation (and even faster in the smaller
+            text samples!), and that millions of people have taken CS50 and implemented this problem. Overall, I am really pleased with the experience
+            of solving this problem and with my implementation's results. I learned a lot about data structures and programming in general, and I am
+            happy that my program even made it into the Big Board!<br>
+            <br>
+            Until Next Time, <strong>this</strong> was Speller.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog2[7].png" alt="Photo of Code Section 7" class="devimg"></img>
+            <img src="pictures/Devlog2[8].png" alt="Photo of Code Section 8" class="devimg"></img>
+            <div class="smallblank"></div>
+            </span></p>
+            <button onclick="ReadMore('dots2', 'more2', 'ReadMore2')" class="ReadMore" id="ReadMore2">Read more >></button>
+
+            <div class="blank"></div>
+            <div class="blank"></div>
+
+            <h1 class="entry-title">Python x Tkinter Elevator Animation</h1>
+            <h4 id="date">July 17th, 2020/</h4>
+            <div class="blank"></div>
+            <p>I developed this small project back in December, while on vacation, because I had just found out about Graphical User
+            Interfaces (or GUIs for short) and I wanted to get my head around how to use them, so after I found out that one of the most
+            popular GUI modules was Tkinter and learning the basics of it, one of my first ideas to test it was to make a small interactive
+            animation of an elevator in which you could click the buttons for each floor and watch the simple elevator drawing move to your
+            selected floor in real time. Here's what I did: <span id="dots1">...</span>
+            <div class="smallblank"></div>
+            <span class="more" id="more1">I started by downloading and importing Tkinter, creating a window for the GUI and styling it
+            with basic geometry and colors. I then went on to learn how to create basic lines and shapes, along with text elements,
+            buttons, labels, canvas, and more simple features to include inside my interface's window.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog1[1].png" alt="Photo of Code Section 1" class="devimg"></img>
+            <div class="smallblank"></div>
+            This took care of the "design" of the window, title, and a drawing of a building with a small elevator in it and multiple floors
+            from PB (more commonly L for Lobby) to a 7th floor. The second part was the coding of the buttons for every floor. For this,
+            I created a small space at the bottom of the window labeled "Buttons", where I laid out 8 evenly-spaced-out yellow buttons. <br>
+            <br>
+            In Tkinter, buttons take a "command" parameter to specify an action to perform whenever that specific button is clicked. However, when
+            running my program, I found that the elevator started moving under the command of every button without the user even pressing on a
+            button! To fix this, I found that you can use the python "lambda" function, which gives you an anonymous function that is taken as a
+            command for a button and handles the code running itself. After testing this fix, I wrote the corresponding "command = lambda:
+            move(floor_number)" for each of the eight yellow buttons, and it turned out to work just fine.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog1[2].png" alt="Photo of Code Section 2" class="devimg" style="width: 100%"></img>
+            <div class="smallblank"></div>
+            Then came the actual programming of the buttons, the genuine "coding" of not the structure, or the style, but the back-end functioning
+            of the interactions of the user with the buttons. To make this work, I used three main parts: a variable depicting the current floor in
+            which the elevator is, a variable to determine whether the elevator is moving or not, and a move() function that moves the elevator a
+            certain amount of distance depending on which floor the user wants to get to. <br>
+            <br>
+            Inside the move() function, I used the "moving" variable to state that the function can only perform operations when the elevator has stopped
+            moving or hasn't started moving. Then, I used the "current_floor" variable and compared it to the function's parameter (the user's desired floor)
+            to determine whether the elevator is going to move upwards or downwards. I calculated the number of floors that the elevator has to move in order
+            to get to the user's desired floor and started the operation: The "moving" variable is set to 1 to determine that the elevator is now moving, and
+            then a simple for loop takes care of the actual moving of the elevator drawing in the GUI to the desired floor. At the end of the process, the
+            "moving" variable is set back to 0 to state that the elevator has stopped movement, and the "current_floor" variable is updated to the floor number
+            that the elevator is now in.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog1[3].png" alt="Photo of Code Section 3" class="devimg"></img>
+            <div class="smallblank"></div>
+            Finally, at the end of the program, we write the line "mainloop()" to allow the tkinter window to run in real time:
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog1[4].png" alt="Photo of Code Section 4" class="devimg" style="min-width: 10%"></img>
+            <div class="smallblank"></div>
+            This project was simple yet very fun to develop and definitely useful to get my head around the basic functions of animation and
+            graphical user interfaces in python. The code is a bit messy (specially due to all the sketching of the lines and shapes
+            in the coordinates of the window), and I'm sure there is a lot of room for optimization, but for a first run with Tkinter, I am
+            pretty happy with how it turned out to look and work. Who knows? I might get back to the project later and give it an upgrade. <br>
+            <br>
+            Until Next Time, <strong>this</strong> was Elevator.
+            <div class="smallblank"></div>
+            <img src="pictures/Devlog1[5].png" alt="Photo of Code Final Section" class="devimg" style="min-width: 10%"></img>
+            <div class="smallblank"></div>
+            <div class="smallblank"></div>
+            </span></p>
+            <button onclick="ReadMore('dots1', 'more1', 'ReadMore1')" class="ReadMore" id="ReadMore1">Read more >></button>
+        </div>
+
+        <div class="blank"></div>
+        <div class="blank"></div>
+
+        <div class="blank"></div>
+        <div class="footer">Copyright 2020 | Victor Fenton Aguilar</div>
+        <div class="smallblank"></div>
+
+        <div class="sm-container">
+            <i class="show-btn fas fa-user" style="color: black"></i>
+            <div class="sm-menu" style="display: none">
+                <a href="https://www.facebook.com/vic.fenton.3/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/victorftn/" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.youtube.com/channel/UCthRHCd7fxLjb1O0bdCbw8A" target="_blank"><i class="fab fa-youtube"></i></a>
+                <a href="https://twitter.com/FentonVictor" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://github.com/Victorfenton11" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+
+        <div class="blank"></div>
+        <div class="blank"></div>
+
+        <script>
+          $(".show-btn").click(function(){
+            $(".sm-menu").toggle();
+          });
+        </script>
+        <script src="Scripts/First.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    </body>
+</html>
